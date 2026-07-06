@@ -1,5 +1,5 @@
 import db from "../db";
-import { extractSkillsInventory } from "./brdExtractor";
+import { extractSkillsFromText } from "../../src/generation/requirementExtractor";
 import { TestCaseGenerator } from "../../src/generation/generator";
 import { SkillParser } from "../../src/core/skillParser";
 import { ConfigManager } from "../../src/config/configManager";
@@ -53,8 +53,8 @@ export async function runGeneration(req: RunRequest): Promise<RunOutcome> {
   const runId = Number(insert.lastInsertRowid);
 
   try {
-    const categories = await extractSkillsInventory({
-      brdText: req.brdText,
+    const categories = await extractSkillsFromText({
+      text: req.brdText,
       moduleContext: moduleContextText,
       scopeTypes: req.scopeTypes,
       scopeNotes: req.scopeNotes,

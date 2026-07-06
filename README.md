@@ -7,8 +7,10 @@ metadata and an XLSX export.
 
 ![Demo — BRD to scored test cases](screenshots/demo.gif)
 
-It ships in two forms:
+It ships in three forms:
 
+- **Library** — `import { generateTestCases } from "test-case-generator"` and
+  generate cases from your own code.
 - **CLI** — feed it a structured *skills inventory* JSON (see below).
 - **Web UI** — log in, upload a BRD PDF, pick a module context and scope, and
   generate + track test cases from the browser.
@@ -17,6 +19,78 @@ It ships in two forms:
 BRD PDF ──▶ extract ──▶ Skills ──▶ Parser ──▶ Prompt ──▶ LLM ──▶ Evaluator ──▶ Formatter ──▶ Files
  (UI)      text→skills           enrich     builder     gen     score/refine   spec/json/xlsx
 ```
+
+## Use as a library
+
+Install it and call it from your own code — no server or UI required.
+
+```bash
+npm install test-case-generator   # or: npm install github:ankit-at/test-case-generator
+```
+
+```ts
+import { generateTestCases, OutputFormatter } from "test-case-generator";
+
+const skills = [
+  {
+    skillId: "CART_001",
+    skillName: "Add a product to the cart",
+    actionType: "Click",
+    steps: ["Open a product", "Click Add to Cart", "Verify the cart count"],
+    expectedResult: "The cart count increments by one.",
+  },
+];
+
+const { testCases, errors } = await generateTestCases(skills, {
+  apiKey: process.env.ANTHROPIC_API_KEY, // or set the env var
+  preset: "standard",                    // minimal | standard | comprehensive
+});
+
+// Render however you like:
+const spec = new OutputFormatter().formatPlaywright(testCases);
+```
+
+Straight from a **skills inventory** (JSON string or parsed array):
+
+```ts
+import { generateFromInventory } from "test-case-generator";
+const { testCases } = await generateFromInventory(jsonString, { preset: "standard" });
+```
+
+Straight from **requirements text** (e.g. a BRD you've already converted to
+text) — it extracts a skills inventory first, then generates and scores:
+
+```ts
+import { generateFromText } from "test-case-generator";
+
+const { skills, testCases } = await generateFromText(
+  {
+    text: brdText,
+    title: "Checkout — payment flow",
+    moduleContext: "Angular storefront; shoppers authenticate then check out.",
+    scopeTypes: ["Functional", "Negative / Edge"],
+  },
+  { preset: "comprehensive" }
+);
+```
+
+### API surface
+
+| Export | Purpose |
+|--------|---------|
+| `generateTestCases(skills, options)` | Generate from a flat `Skill[]` |
+| `generateFromInventory(json \| categories, options)` | Generate from a skills inventory |
+| `generateFromText(input, options)` | Requirements text → skills → scored cases |
+| `extractSkillsFromText(input, apiKey?)` | Just the requirements → skills step |
+| `TestCaseGenerator` | Class for full control over batching/refinement |
+| `OutputFormatter` | Render to Playwright / JSON / XLSX |
+| `EvaluationEngine`, `SkillParser`, `PromptBuilder`, `ClaudeClient` | Building blocks |
+| `ConfigManager`, `DEFAULT_CONFIG`, `PRESETS` | Config and presets |
+
+`options`: `{ apiKey?, preset?, config?, goldenExamples?, appContext? }`. All
+functions resolve the API key from `options.apiKey` or `ANTHROPIC_API_KEY`.
+Generation never throws on a single failed skill — failures are collected in the
+returned `errors` array. Ships with TypeScript types.
 
 ## Web UI
 

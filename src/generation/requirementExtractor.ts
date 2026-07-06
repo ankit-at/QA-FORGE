@@ -1,30 +1,37 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { SkillCategory } from "../../src/core/types";
+import { SkillCategory } from "../core/types";
 
-export interface ExtractionInput {
-  brdText: string;
+export interface RequirementExtractionInput {
+  /** Raw requirements text (e.g. a BRD converted to text). */
+  text: string;
+  /** Optional title for context. */
+  title?: string;
+  /** Optional module/domain context to ground extraction. */
   moduleContext?: string;
-  scopeTypes: string[];
+  /** Requested test scope, e.g. ["Functional", "Negative / Edge"]. */
+  scopeTypes?: string[];
+  /** Free-text notes to steer scope. */
   scopeNotes?: string;
-  title: string;
+  /** Model override. Defaults to TCGEN_MODEL or claude-sonnet-4-6. */
+  model?: string;
 }
 
-const MODEL = process.env.TCGEN_MODEL || "claude-sonnet-4-6";
-
 /**
- * Turns a BRD (plus module context and scope) into a structured skills
- * inventory that the existing generation engine can consume.
+ * Decomposes free-form requirements text into a structured skills inventory
+ * that the generation engine can consume. Pure text in — no PDF handling — so
+ * the library stays dependency-light.
  */
-export async function extractSkillsInventory(
-  input: ExtractionInput,
+export async function extractSkillsFromText(
+  input: RequirementExtractionInput,
   apiKey?: string
 ): Promise<SkillCategory[]> {
   const key = apiKey ?? process.env.ANTHROPIC_API_KEY;
   if (!key) throw new Error("ANTHROPIC_API_KEY is not set.");
   const client = new Anthropic({ apiKey: key });
+  const model = input.model || process.env.TCGEN_MODEL || "claude-sonnet-4-6";
 
-  const system = `You are a QA analyst. You read a Business Requirements Document (BRD)
-and decompose it into atomic, testable skills grouped into categories.
+  const system = `You are a QA analyst. You read requirements and decompose them
+into atomic, testable skills grouped into categories.
 
 Return ONLY valid JSON (no markdown) as an array of categories in this shape:
 [
@@ -54,24 +61,22 @@ Rules:
 - Prefer 1-6 skills per category. Omit empty testData/elementSelectors keys.`;
 
   const scope =
-    input.scopeTypes.length > 0
+    input.scopeTypes && input.scopeTypes.length > 0
       ? input.scopeTypes.join(", ")
       : "functional";
 
-  const user = `TITLE: ${input.title}
-
-REQUESTED TEST SCOPE: ${scope}
-${input.scopeNotes ? `SCOPE NOTES: ${input.scopeNotes}\n` : ""}
-${input.moduleContext ? `MODULE CONTEXT:\n${input.moduleContext}\n` : ""}
-BUSINESS REQUIREMENTS DOCUMENT:
+  const user = `${input.title ? `TITLE: ${input.title}\n\n` : ""}REQUESTED TEST SCOPE: ${scope}
+${input.scopeNotes ? `SCOPE NOTES: ${input.scopeNotes}\n` : ""}${
+    input.moduleContext ? `MODULE CONTEXT:\n${input.moduleContext}\n\n` : ""
+  }REQUIREMENTS:
 """
-${truncate(input.brdText, 24000)}
+${truncate(input.text, 24000)}
 """
 
 Extract the skills inventory now. Return ONLY the JSON array.`;
 
   const response = await client.messages.create({
-    model: MODEL,
+    model,
     max_tokens: 4000,
     temperature: 0.4,
     system,
@@ -82,7 +87,6 @@ Extract the skills inventory now. Return ONLY the JSON array.`;
   if (!block || block.type !== "text") {
     throw new Error("Unexpected non-text response from extractor.");
   }
-
   const cleaned = block.text.replace(/```(?:json)?/gi, "");
   const match = cleaned.match(/\[[\s\S]*\]/);
   if (!match) throw new Error("Extractor did not return a JSON array.");
