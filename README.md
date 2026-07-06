@@ -30,6 +30,16 @@ generation core.
   notes → generate. Results land on a dashboard with `.spec.ts` / JSON / XLSX
   downloads per run.
 
+### Screenshots
+
+| Generate flow | Run detail |
+|---|---|
+| ![Generate](screenshots/03-generate.png) | ![Run detail](screenshots/04-run-detail.png) |
+
+| Admin dashboard (all users) | Module contexts |
+|---|---|
+| ![Admin dashboard](screenshots/05-admin-dashboard.png) | ![Module contexts](screenshots/07-admin-contexts.png) |
+
 ### Run it
 
 ```bash
