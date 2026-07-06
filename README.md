@@ -1,4 +1,6 @@
-# Test Case Generator
+# QA-FORGE
+
+**A test-case generator you can import, run from the CLI, or use as a web app.**
 
 Turns requirements into production-ready test cases. It parses and enriches each
 unit of work, builds a focused prompt, generates a test through an LLM, scores
@@ -9,7 +11,7 @@ metadata and an XLSX export.
 
 It ships in three forms:
 
-- **Library** — `import { generateTestCases } from "test-case-generator"` and
+- **Library** — `import { generateTestCases } from "qaforge"` and
   generate cases from your own code.
 - **CLI** — feed it a structured *skills inventory* JSON (see below).
 - **Web UI** — log in, upload a BRD PDF, pick a module context and scope, and
@@ -25,11 +27,11 @@ BRD PDF ──▶ extract ──▶ Skills ──▶ Parser ──▶ Prompt ─
 Install it and call it from your own code — no server or UI required.
 
 ```bash
-npm install test-case-generator   # or: npm install github:ankit-at/test-case-generator
+npm install qaforge   # or: npm install github:ankit-at/QA-FORGE
 ```
 
 ```ts
-import { generateTestCases, OutputFormatter } from "test-case-generator";
+import { generateTestCases, OutputFormatter } from "qaforge";
 
 const skills = [
   {
@@ -53,7 +55,7 @@ const spec = new OutputFormatter().formatPlaywright(testCases);
 Straight from a **skills inventory** (JSON string or parsed array):
 
 ```ts
-import { generateFromInventory } from "test-case-generator";
+import { generateFromInventory } from "qaforge";
 const { testCases } = await generateFromInventory(jsonString, { preset: "standard" });
 ```
 
@@ -61,7 +63,7 @@ Straight from **requirements text** (e.g. a BRD you've already converted to
 text) — it extracts a skills inventory first, then generates and scores:
 
 ```ts
-import { generateFromText } from "test-case-generator";
+import { generateFromText } from "qaforge";
 
 const { skills, testCases } = await generateFromText(
   {
@@ -154,8 +156,8 @@ first draft of the automation, so the manual step becomes *review* instead of
 ## Install
 
 ```bash
-git clone https://github.com/<your-account>/test-case-generator.git
-cd test-case-generator
+git clone https://github.com/ankit-at/QA-FORGE.git
+cd QA-FORGE
 npm install
 cp .env.example .env   # then add your ANTHROPIC_API_KEY
 ```
@@ -174,7 +176,7 @@ npm run dev -- --preset minimal --no-eval
 
 # Build and run the compiled CLI
 npm run build
-node dist/index.js --source examples/skills-inventory.json
+node dist/cli.js --source examples/skills-inventory.json
 ```
 
 ### Options

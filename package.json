@@ -1,7 +1,7 @@
 {
-  "name": "test-case-generator",
+  "name": "qaforge",
   "version": "1.0.0",
-  "description": "Generate production-ready test cases from a BRD or skills inventory using an LLM, with a web UI.",
+  "description": "Generate production-ready test cases from a BRD or skills inventory using an LLM. Import as a library, run from the CLI, or use the web app.",
   "type": "commonjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -36,29 +36,30 @@
   "keywords": [
     "testing",
     "test-generation",
+    "test-cases",
     "playwright",
     "qa",
     "automation",
-    "brd"
+    "brd",
+    "llm"
   ],
   "author": "Ankit Tiwari",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ankit-at/QA-FORGE.git"
+  },
+  "homepage": "https://github.com/ankit-at/QA-FORGE#readme",
+  "bugs": {
+    "url": "https://github.com/ankit-at/QA-FORGE/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.30.1",
     "ajv": "^8.17.1",
-    "bcryptjs": "^2.4.3",
-    "better-sqlite3": "^11.3.0",
-    "cors": "^2.8.5",
-    "exceljs": "^4.4.0",
-    "express": "^4.19.2",
-    "express-rate-limit": "^7.5.1",
-    "helmet": "^7.2.0",
-    "jsonwebtoken": "^9.0.2",
-    "multer": "^2.2.0",
-    "pdf-parse": "^1.1.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.26.1"
+    "exceljs": "^4.4.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -72,7 +73,19 @@
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.3.0",
     "concurrently": "^8.2.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.5.1",
+    "helmet": "^7.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.2.0",
+    "pdf-parse": "^1.1.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4",
     "vite": "^5.4.2"

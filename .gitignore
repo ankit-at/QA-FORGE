@@ -17,3 +17,6 @@ tcgen.db-wal
 # Uploaded files
 server/uploads/*
 !server/uploads/.gitkeep
+
+# npm pack artifacts
+*.tgz
