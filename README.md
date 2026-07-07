@@ -277,34 +277,19 @@ Residual notes for a hosted deployment:
 - `npm audit` reports a moderate transitive advisory in `uuid` (via `exceljs`);
   the fix is a breaking `exceljs` downgrade, so it is tracked rather than forced.
 
-## Java library
-
-A Java port of the engine lives in [`java/`](java/README.md) and publishes to
-Maven Central as `io.github.ankit-at:qaforge`. Same idea, JVM-native, depends
-only on Jackson and the JDK HTTP client.
-
-```java
-GenerationResult r = QAForge.generateTestCases(skills,
-    GenerateOptions.create().preset(Preset.STANDARD));
-```
-
 ## Releasing
 
-Both packages publish automatically from GitHub Actions when you push a version
-tag:
+The npm package publishes automatically from GitHub Actions
+(`.github/workflows/publish-npm.yml`) when you push a version tag or run the
+workflow manually. It needs the repo secret `NPM_TOKEN`.
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+# bump the version in package.json first, then:
+git tag v1.0.1
+git push origin v1.0.1
 ```
 
-- **npm** (`.github/workflows/publish-npm.yml`) — needs repo secret `NPM_TOKEN`.
-- **Java → Maven Central** (`.github/workflows/publish-java.yml`) — needs
-  `CENTRAL_USERNAME`, `CENTRAL_PASSWORD`, `MAVEN_GPG_PRIVATE_KEY`,
-  `MAVEN_GPG_PASSPHRASE`, and the `io.github.ankit-at` namespace verified in the
-  Central Portal.
-
-`CI` (`.github/workflows/ci.yml`) builds and tests both on every push/PR.
+`CI` (`.github/workflows/ci.yml`) builds and typechecks on every push/PR.
 
 ## License
 
