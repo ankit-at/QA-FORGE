@@ -2,6 +2,14 @@
 
 **A test-case generator you can import, run from the CLI, or use as a web app.**
 
+[![npm version](https://img.shields.io/npm/v/@ankit-at/qaforge.svg)](https://www.npmjs.com/package/@ankit-at/qaforge)
+[![CI](https://github.com/ankit-at/QA-FORGE/actions/workflows/ci.yml/badge.svg)](https://github.com/ankit-at/QA-FORGE/actions/workflows/ci.yml)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+```bash
+npm install @ankit-at/qaforge
+```
+
 Turns requirements into production-ready test cases. It parses and enriches each
 unit of work, builds a focused prompt, generates a test through an LLM, scores
 the result with an LLM-as-judge pass, and outputs Playwright specs, JSON
